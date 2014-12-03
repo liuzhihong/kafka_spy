@@ -1,0 +1,3 @@
+com.suning.app.spy.core.service.impl.CmdOperateService
+com.suning.app.spy.core.service.impl.JmxOperateService
+com.suning.app.spy.core.service.impl.ZookeeperOperateService

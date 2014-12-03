@@ -1,0 +1,263 @@
+<?xml version="1.0"?>
+<project
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+	xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>com.suning.app</groupId>
+		<artifactId>spy.all</artifactId>
+		<version>1.0-SNAPSHOT</version>
+		<relativePath>../pom.xml</relativePath>
+	</parent>
+
+	<groupId>com.suning.app</groupId>
+	<artifactId>spy.deploy</artifactId>
+	<version>${pom.version}</version>
+	<packaging>jar</packaging>
+
+	<dependencies>
+
+		<dependency>
+			<groupId>com.suning.app</groupId>
+			<artifactId>spy.core</artifactId>
+			<version>${pom.version}</version>
+		</dependency>
+
+	</dependencies>
+
+
+	<profiles>
+		<profile>
+			<id>dev</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+				<property>
+					<name>env</name>
+					<value>!release</value>
+				</property>
+			</activation>
+			<properties>
+				<release_directory>${project.build.directory}/dev
+				</release_directory>
+			</properties>
+			<build>
+				<plugins>
+
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-dependency-plugin</artifactId>
+						<version>2.3</version>
+						<executions>
+							<execution>
+								<id>copy-dependencies</id>
+								<phase>prepare-package</phase>
+								<goals>
+									<goal>copy-dependencies</goal>
+								</goals>
+							</execution>
+
+							<execution>
+								<id>copy-jar</id>
+								<phase>package</phase>
+								<goals>
+									<goal>copy</goal>
+								</goals>
+								<configuration>
+									<artifactItems>
+										<artifactItem>
+											<groupId>com.suning.app</groupId>
+											<artifactId>spy.deploy</artifactId>
+											<version>${project.version}</version>
+											<type>jar</type>
+										</artifactItem>
+									</artifactItems>
+									<outputDirectory>${release_directory}/lib</outputDirectory>
+									<overWriteReleases>false</overWriteReleases>
+									<overWriteSnapshots>true</overWriteSnapshots>
+								</configuration>
+							</execution>
+
+						</executions>
+						<configuration>
+							<silent>true</silent>
+							<includeTypes>jar</includeTypes>
+							<overWriteSnapshots>true</overWriteSnapshots>
+							<type>jar</type>
+							<outputDirectory>${release_directory}/lib</outputDirectory>
+						</configuration>
+					</plugin>
+
+					<plugin>
+						<artifactId>maven-antrun-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>prepare-deploy-package</id>
+								<phase>package</phase>
+								<goals>
+									<goal>run</goal>
+								</goals>
+								<configuration>
+									<tasks>
+										<mkdir dir="${release_directory}" />
+										<property name="begintoken" value="$" />
+										<copy todir="${release_directory}">
+											<fileset dir="${project.basedir}">
+												<include name="bin/**" />
+												<include name="conf/**" />
+												<include name="lib_ext/**" />
+											</fileset>
+
+											<filterset begintoken="${begintoken}{" endtoken="}">
+												<filtersfile file="../antx-dev.properties" />
+											</filterset>
+
+										</copy>
+										<chmod dir="${release_directory}/bin" perm="755"
+											includes="**" />
+									</tasks>
+
+
+								</configuration>
+							</execution>
+
+							<execution>
+								<id>assemble-task-zip</id>
+								<phase>install</phase>
+								<goals>
+									<goal>run</goal>
+								</goals>
+								<configuration>
+									<tasks>
+										<zip destfile="${project.build.directory}/task.zip">
+											<fileset dir="${release_directory}"></fileset>
+										</zip>
+									</tasks>
+
+								</configuration>
+							</execution>
+
+						</executions>
+					</plugin>
+
+				</plugins>
+			</build>
+		</profile>
+
+		<profile>
+			<id>release</id>
+			<activation>
+				<property>
+					<name>env</name>
+					<value>release</value>
+				</property>
+			</activation>
+			<properties>
+				<release_directory>${project.build.directory}/release
+				</release_directory>
+			</properties>
+			<build>
+				<plugins>
+
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-dependency-plugin</artifactId>
+						<version>2.3</version>
+						<executions>
+							<execution>
+								<id>copy-dependencies</id>
+								<phase>prepare-package</phase>
+								<goals>
+									<goal>copy-dependencies</goal>
+								</goals>
+							</execution>
+
+							<execution>
+								<id>copy-jar</id>
+								<phase>package</phase>
+								<goals>
+									<goal>copy</goal>
+								</goals>
+								<configuration>
+									<artifactItems>
+										<artifactItem>
+											<groupId>com.suning.app</groupId>
+											<artifactId>spy.deploy</artifactId>
+											<version>${project.version}</version>
+											<type>jar</type>
+										</artifactItem>
+									</artifactItems>
+									<outputDirectory>${release_directory}/lib</outputDirectory>
+									<overWriteReleases>false</overWriteReleases>
+									<overWriteSnapshots>true</overWriteSnapshots>
+								</configuration>
+							</execution>
+
+						</executions>
+						<configuration>
+							<silent>true</silent>
+							<includeTypes>jar</includeTypes>
+							<overWriteSnapshots>true</overWriteSnapshots>
+							<type>jar</type>
+							<outputDirectory>${release_directory}/lib</outputDirectory>
+						</configuration>
+					</plugin>
+
+					<plugin>
+						<artifactId>maven-antrun-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>prepare-deploy-package</id>
+								<phase>package</phase>
+								<goals>
+									<goal>run</goal>
+								</goals>
+								<configuration>
+									<tasks>
+										<mkdir dir="${release_directory}" />
+										<property name="begintoken" value="$" />
+										<copy todir="${release_directory}">
+											<fileset dir="${project.basedir}">
+												<include name="bin/**" />
+												<include name="conf/**" />
+												<include name="lib_ext/**" />
+											</fileset>
+
+											<filterset begintoken="${begintoken}{" endtoken="}">
+												<filtersfile file="../antx-release.properties" />
+											</filterset>
+
+										</copy>
+										<chmod dir="${release_directory}/bin" perm="755"
+											includes="**" />
+									</tasks>
+
+
+								</configuration>
+							</execution>
+
+							<execution>
+								<id>assemble-task-zip</id>
+								<phase>install</phase>
+								<goals>
+									<goal>run</goal>
+								</goals>
+								<configuration>
+									<tasks>
+										<zip destfile="${project.build.directory}/task.zip">
+											<fileset dir="${release_directory}"></fileset>
+										</zip>
+									</tasks>
+
+								</configuration>
+							</execution>
+
+						</executions>
+					</plugin>
+
+				</plugins>
+			</build>
+		</profile>
+
+	</profiles>
+
+</project>

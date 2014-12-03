@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
+<!--
+  - @author karry
+ -->
+<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/">
+    <!-- ===================================================================== -->
+    <!--  System appender                                                                                  -->
+    <!-- ===================================================================== -->
+    <appender name="PROJECT" class="org.apache.log4j.DailyRollingFileAppender">
+        <param name="file" value="${spy_loggingRoot}/sys/project.log"/>
+        <param name="append" value="true"/>
+        <param name="encoding" value="UTF-8"/>
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="%d %-5p %c{2} - %m%n"/>
+        </layout>
+    </appender>
+    
+
+    <!-- ===================================================================== -->
+    <!--  Bussiness appender                                                                                                -->
+    <!-- ===================================================================== -->
+    
+    <appender name="COMMON" class="org.apache.log4j.DailyRollingFileAppender">
+        <param name="file" value="${spy_loggingRoot}/usr/spy/common.log"/>
+		<param name="append" value="true" />				
+		<param name="maxFileSize" value="100MB" />
+		<param name="maxBackupIndex" value="200" /> 
+		<param name="encoding" value="UTF-8" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="%d %-5p %c{2} - %m%n" />
+		</layout>
+    </appender>
+
+
+    <!-- ===================================================================== -->
+    <!--  Bussiness logger                                                                                              -->
+    <!-- ===================================================================== -->
+
+    <logger name="com.suning.app.spy.core" additivity="false">
+        <level value="${spy_loggingLevel}"/>
+        <appender-ref ref="COMMON"/>
+    </logger>	
+
+    <!-- ===================================================================== -->
+    <!--  Root logger                                                          -->
+    <!-- ===================================================================== -->
+    <root>
+        <level value="info"/>
+        <appender-ref ref="PROJECT"/>
+    </root>
+</log4j:configuration>
